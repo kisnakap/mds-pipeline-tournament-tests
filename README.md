@@ -7,15 +7,15 @@ docker compose build
 docker compose run --rm tests                  		# full test suite run
 
 docker compose up pipeline                     		# problem 1: demo (10 s windows); Ctrl+C to stop
-docker compose run --rm pipeline python main.py   # problem 1: default settings (5 min windows, files nightly at 02:00); Ctrl+C to stop
+docker compose run --rm pipeline python main.py		# problem 1: default settings (5 min windows, files nightly at 02:00); Ctrl+C to stop
 
 docker compose run --rm tournament             		# problem 2: one tournament, round by round
 docker compose run --rm tournament-compare     		# problem 2: greedy vs random seating
 
 # custom arguments
-docker compose run --rm tests python -m pytest tests/test_messaging.py -v										                  # test suite: testing one file 
+docker compose run --rm tests python -m pytest tests/test_messaging.py -v                                   	# test suite: testing one file 
 docker compose run --rm pipeline python main.py --files-now --strategy next-fit --files 200 --mean-file-mb 5	# problem 1: custom arguments; Ctrl+C to stop
-docker compose run --rm tournament python tournament_main.py --players 40 --tables 5 --seats 4 --seed 7			  # problem 2: custom arguments 
+docker compose run --rm tournament python tournament_main.py --players 40 --tables 5 --seats 4 --seed 7     	# problem 2: custom arguments 
 
 ```
 
@@ -29,25 +29,25 @@ minibatch is flushed and the worker pool finishes its queued work.
 
 ```
 pip install -r requirements.txt
-python -m pytest -v							  								# full test suite run
+python -m pytest -v                                                     	# full test suite run
 
-python main.py --window 10 --files-now        		# problem 1: demo (10 s windows); Ctrl+C to stop
-python main.py 								  								  # problem 1: default settings (5 min windows, files nightly at 02:00); Ctrl+C to stop
-		
-python tournament_main.py --players 14 --tables 3 --seats 4 --seed 3 		    # problem 2: one tournament, round by round
+python main.py --window 10 --files-now                                  	# problem 1: demo (10 s windows); Ctrl+C to stop
+python main.py                                                          	# problem 1: default settings (5 min windows, files nightly at 02:00); Ctrl+C to stop
+
+python tournament_main.py --players 14 --tables 3 --seats 4 --seed 3    	# problem 2: one tournament, round by round
 python tournament_main.py --players 40 --tables 5 --seats 4 --compare 200 	# problem 2: greedy vs random seating
 
 # custom arguments
-python -m pytest tests/test_messaging.py -v   									              # test suite: testing one file
-python main.py --files-now --strategy next-fit --files 200 --mean-file-mb 5		# problem 1: custom arguments; Ctrl+C to stop
-python tournament_main.py --players 40 --tables 5 --seats 4 --seed 7			    # problem 2: custom arguments 
+python -m pytest tests/test_messaging.py -v                                 	# test suite: testing one file
+python main.py --files-now --strategy next-fit --files 200 --mean-file-mb 5 	# problem 1: custom arguments; Ctrl+C to stop
+python tournament_main.py --players 40 --tables 5 --seats 4 --seed 7        	# problem 2: custom arguments
 
 
 # generate documentation
-pip install pdoc && pdoc pipeline tournament  # browse the API documentation
+pip install pdoc && pdoc pipeline tournament                                	# browse the API documentation
 ```
 
-# Problem 1: Data processing pipeline ('pipeline/')
+# Problem 1: Data processing pipeline
 
 Two pipelines run in parallel and share one pool of 10 worker threads:
 
@@ -70,6 +70,7 @@ DailyScheduler ─► FileBucketingJob ─(FileBucket)────────�
 ## Layout ('pipeline/')
 
 | Module | Contents |
+|---|---|
 | `core.py` | Abstractions: `Clock`, `Dispatcher`, `Processor`, `Job`, `BackgroundProcess` |
 | `distributions.py` | `Distribution`, `ExponentialDistribution` |
 | `messaging.py` | `Message`, `MessageBatch`, `MessageSource`, `PoissonMessageSource`, `TimeWindowAccumulator` (pure rules), `MinibatchService` |
@@ -95,7 +96,7 @@ class MyStrategy(BucketingStrategy):
 ```
 Then add it to `STRATEGIES` in `tests/test_bucketing.py` (so it must pass the contract tests) and in `main.py`.
 
-# Problem 2: Game-night tournament (`tournament/`)
+# Problem 2: Game-night tournament
 
 N players, T tables, G players per table, and one winner per game. The tournament ends when one
 player is left in the title race.
@@ -144,6 +145,7 @@ Example: round 2 of a tournament with 14 players at 3 tables of 4 (`* = still in
 ## Layout (`tournament/`)
 
 | Module | Contents |
+|---|---|
 | `models.py` | `TournamentConfig` (validates G >= 2, T >= 1, N >= T*G), `Table`, `RoundPlan`, `RoundResult`, `TournamentResult` |
 | `history.py` | `MeetingHistory`: how often each pair played together, games played, distinct opponents |
 | `outcomes.py` | `WinnerSelector` -> `RandomWinnerSelector`, `SkillWeightedWinnerSelector` |
@@ -183,6 +185,7 @@ tests/
 ## Layout (`tests/`)
 
 | File | What it checks |
+|---|---|
 | `test_messaging.py` | 5-minute windows from the first message, boundary handling, batches don't wait for processing, Poisson statistics |
 | `test_bucketing.py` | Every strategy keeps the 10 MB rule and packs each file once |
 | `test_files.py` | File sources, and the job packs and dispatches every file |
@@ -195,6 +198,7 @@ tests/
 **Test doubles**
 
 | File | Doubles |
+|---|---|
 | `fakes.py` | `FakeClock`, `ManualMessageSource`, `FailingMessageSource`, `SequenceDistribution`, `InMemoryFileSource`, `files_of_sizes_mb`, `exponential_files`, `StubBucketingStrategy`, `RecordingDispatcher`, `RecordingProcessor`, `GatedProcessor`, `RecordingJob`, `running`, `wait_until` |
 | `tournament_fakes.py` | `LowestIdWins`, `NonContenderWins`, `OutsideWinner`, `RecordingObserver`, `make_tournament` |
 

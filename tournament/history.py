@@ -46,4 +46,9 @@ class MeetingHistory:
 
     def repeated_meetings(self) -> int:
         """Total number of times any pair met again after their first game together."""
-        return sum(n - 1 for met in self._met.values() for n in met.values()) // 2
+        repeated_meetings = 0
+        for met in self._met.values():      # each player's Counter
+            for n in met.values():          # each meeting count in it
+                repeated_meetings += n - 1
+        return repeated_meetings // 2
+        

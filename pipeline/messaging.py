@@ -1,10 +1,13 @@
-"""Turns a Poisson message stream into 5-minute minibatches and hands them to dispatcher.
+"""Turns a Poisson message stream into 5-minute minibatches and hands them to a dispatcher.
 
   Flow:
-      PoissonMessageSource ─► MinibatchService ─► Dispatcher (e.g. WorkerPool)
-                                   │
-                                   └── TimeWindowAccumulator (batching rules)
-"""
+
+  ```text
+  PoissonMessageSource ─► MinibatchService ─► Dispatcher (e.g. WorkerPool)
+                               │
+                               └── TimeWindowAccumulator (batching rules)
+  ```
+  """
 from __future__ import annotations
 
 import itertools

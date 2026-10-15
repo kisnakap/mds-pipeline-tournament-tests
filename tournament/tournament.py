@@ -1,4 +1,4 @@
-""""Runs the tournament round by round until a single overall winner remains,
+"""Runs the tournament round by round until a single overall winner remains,
 notifying observers after each round."""
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ class TournamentNotFinishedError(RuntimeError):
 
 
 class RoundObserver(ABC):
-    """Hook for printing, saving or a UI without without changing Tournament (Open/Closed principle)."""
+    """Hook for printing, saving or a UI without changing Tournament (Open/Closed principle)."""
 
     @abstractmethod
     def on_round(self, result: RoundResult) -> None: ...
