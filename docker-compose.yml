@@ -1,0 +1,30 @@
+# All services share one image.
+#   docker compose run --rm tests                 # full test suite (296 tests)
+#   docker compose up pipeline                    # problem 1 demo; Ctrl+C / docker compose stop to end
+#   docker compose run --rm tournament            # problem 2: one tournament, round by round
+#   docker compose run --rm tournament-compare    # problem 2: greedy vs random seating over 200 tournaments
+
+x-app: &app
+  image: mds-solution:latest
+  build: .
+  init: true
+  stop_grace_period: 15s
+
+services:
+  tests:
+    <<: *app
+    command: ["python", "-m", "pytest", "-v"]
+
+  pipeline:
+    <<: *app
+    # Demo settings: 10 s windows and 30 msgs/min so batches appear quickly, plus one file run at startup.
+    # Problem settings: ["python", "main.py"]  (10 msgs/min, 5 min windows, files nightly at 02:00)
+    command: ["python", "main.py", "--window", "10", "--rate", "30", "--files-now"]
+
+  tournament:
+    <<: *app
+    command: ["python", "tournament_main.py", "--players", "14", "--tables", "3", "--seats", "4", "--seed", "3"]
+
+  tournament-compare:
+    <<: *app
+    command: ["python", "tournament_main.py", "--players", "40", "--tables", "5", "--seats", "4", "--compare", "200"]
